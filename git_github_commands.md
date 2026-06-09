@@ -1,116 +1,116 @@
-# Git and GitHub Commands Guide
+# GitとGitHubのコマンドガイド
 
-## 1. Initial Setup (初期設定)
+## 1. 初期設定 (Initial Setup)
 
-- **Set global username:**
+- **グローバルなユーザー名を設定する:**
   `git config --global user.name "Your Name"`
-- **Set global email:**
+- **グローバルなメールアドレスを設定する:**
   `git config --global user.email "your.email@example.com"`
-- **Check configuration:**
+- **設定を確認する:**
   `git config --list`
 
-## 2. Creating and Cloning Repositories (リポジトリの作成とクローン)
+## 2. リポジトリの作成とクローン (Creating and Cloning Repositories)
 
-- **Initialize a new Git repository:**
+- **新しいGitリポジトリを初期化する:**
   `git init`
-- **Clone an existing repository:**
+- **既存のリポジトリをクローンする:**
   `git clone <repository-url>`
 
-## 3. Basic Workflow (基本的なワークフロー)
+## 3. 基本的なワークフロー (Basic Workflow)
 
-- **Check status:**
+- **状態を確認する:**
   `git status`
-- **Add a file to the staging area:**
+- **ファイルをステージングエリアに追加する:**
   `git add <file-name>`
-- **Add all modified/new files to staging:**
+- **変更・新規作成されたすべてのファイルをステージングに追加する:**
   `git add .`
-- **Commit changes with a message:**
+- **メッセージを付けて変更をコミットする:**
   `git commit -m "Commit message"`
-- **Amend the last commit:**
+- **直前のコミットを修正する:**
   `git commit --amend`
 
-## 4. Viewing History (履歴の確認)
+## 4. 履歴の確認 (Viewing History)
 
-- **View commit history:**
+- **コミット履歴を表示する:**
   `git log`
-- **View a condensed commit history:**
+- **コミット履歴を1行で簡潔に表示する:**
   `git log --oneline`
-- **View changes made to files:**
+- **ファイルに加えられた変更を表示する:**
   `git diff`
 
-## 5. Branching and Merging (ブランチとマージ)
+## 5. ブランチとマージ (Branching and Merging)
 
-- **List all local branches:**
+- **ローカルのすべてのブランチを一覧表示する:**
   `git branch`
-- **List all branches (local and remote):**
+- **すべてのブランチ（ローカルとリモート）を一覧表示する:**
   `git branch -a`
-- **Create a new branch:**
+- **新しいブランチを作成する:**
   `git branch <branch-name>`
-- **Switch to a branch:**
-  `git checkout <branch-name>`  *(or `git switch <branch-name>`)*
-- **Create and switch to a new branch:**
-  `git checkout -b <branch-name>` *(or `git switch -c <branch-name>`)*
-- **Merge a branch into the current branch:**
+- **ブランチを切り替える:**
+  `git checkout <branch-name>`  *(または `git switch <branch-name>`)*
+- **新しいブランチを作成して切り替える:**
+  `git checkout -b <branch-name>` *(または `git switch -c <branch-name>`)*
+- **現在のブランチに別のブランチをマージする:**
   `git merge <branch-name>`
-- **Delete a local branch:**
+- **ローカルブランチを削除する:**
   `git branch -d <branch-name>`
 
-## 6. Remote Repositories (リモートリポジトリ)
+## 6. リモートリポジトリ (Remote Repositories)
 
-- **List remote repositories:**
+- **リモートリポジトリを一覧表示する:**
   `git remote -v`
-- **Add a new remote repository:**
+- **新しいリモートリポジトリを追加する:**
   `git remote add origin <repository-url>`
-- **Push changes to remote repository:**
+- **リモートリポジトリに変更をプッシュする:**
   `git push origin <branch-name>`
-- **Fetch changes from remote repository:**
+- **リモートリポジトリから変更をフェッチ（取得）する:**
   `git fetch`
-- **Pull changes from remote repository (fetch + merge):**
+- **リモートリポジトリから変更をプル（取得してマージ）する:**
   `git pull origin <branch-name>`
 
-## 7. Stashing (スタッシュ)
+## 7. スタッシュ (Stashing)
 
-- **Stash current changes:**
+- **現在の変更を一時的に退避（スタッシュ）する:**
   `git stash`
-- **List all stashes:**
+- **すべてのスタッシュを一覧表示する:**
   `git stash list`
-- **Apply the latest stash:**
+- **最新のスタッシュを適用する:**
   `git stash apply`
-- **Apply and remove the latest stash:**
+- **最新のスタッシュを適用して削除する:**
   `git stash pop`
 
-## 8. Undoing Changes (変更の取り消し)
+## 8. 変更の取り消し (Undoing Changes)
 
-- **Unstage a file:**
+- **ファイルのステージングを取り消す:**
   `git restore --staged <file-name>`
-- **Discard changes in working directory:**
+- **作業ディレクトリの変更を破棄する:**
   `git restore <file-name>`
-- **Revert a commit (creates a new commit reverting changes):**
+- **コミットを取り消す（変更を取り消す新しいコミットを作成）:**
   `git revert <commit-hash>`
-- **Reset commit history (moves HEAD):**
-  - **Soft reset (keep changes in staging):** `git reset --soft <commit-hash>`
-  - **Mixed reset (keep changes in working directory):** `git reset HEAD~1` (default)
-  - **Hard reset (discard all changes):** `git reset --hard <commit-hash>`
+- **コミット履歴をリセットする（HEADを移動）:**
+  - **Softリセット（変更をステージングに残す）:** `git reset --soft <commit-hash>`
+  - **Mixedリセット（変更を作業ディレクトリに残す）:** `git reset HEAD~1` (デフォルト)
+  - **Hardリセット（すべての変更を破棄）:** `git reset --hard <commit-hash>`
 
 ---
 
-## GitHub CLI (`gh`) Commands
+## GitHub CLI (`gh`) コマンド
 
-If you have the [GitHub CLI](https://cli.github.com/) installed, you can use these commands to interact with GitHub directly from your terminal.
+[GitHub CLI](https://cli.github.com/)がインストールされている場合、これらのコマンドを使用してターミナルから直接GitHubを操作できます。
 
-- **Authenticate with GitHub:**
+- **GitHubで認証する:**
   `gh auth login`
-- **Clone a repository:**
+- **リポジトリをクローンする:**
   `gh repo clone <owner>/<repo>`
-- **Create a new repository on GitHub:**
-  `gh repo create <repo-name> --public` *(or `--private`)*
-- **Create a Pull Request:**
-  `gh pr create --title "PR Title" --body "PR Description"`
-- **List open Pull Requests:**
+- **GitHubに新しいリポジトリを作成する:**
+  `gh repo create <repo-name> --public` *(または `--private`)*
+- **プルリクエストを作成する:**
+  `gh pr create --title "PRのタイトル" --body "PRの説明"`
+- **開いているプルリクエストを一覧表示する:**
   `gh pr list`
-- **Checkout a Pull Request locally:**
+- **プルリクエストをローカルにチェックアウトする:**
   `gh pr checkout <pr-number>`
-- **View an issue:**
+- **Issueを表示する:**
   `gh issue view <issue-number>`
-- **Create a new issue:**
-  `gh issue create --title "Issue Title" --body "Issue details"`
+- **新しいIssueを作成する:**
+  `gh issue create --title "Issueのタイトル" --body "Issueの詳細"`
