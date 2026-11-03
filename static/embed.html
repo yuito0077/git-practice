@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: transparent;
+    color: #f8fafc;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .chat-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  }
+  .header {
+    background: rgba(30, 41, 59, 0.8);
+    padding: 12px 16px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: #38bdf8;
+  }
+  .messages {
+    flex-grow: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .message {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    line-height: 1.4;
+    font-size: 14px;
+    word-wrap: break-word;
+    position: relative;
+  }
+  .message.user {
+    align-self: flex-end;
+    background: #38bdf8;
+    color: #0f172a;
+    border-bottom-right-radius: 2px;
+  }
+  .message.assistant {
+    align-self: flex-start;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom-left-radius: 2px;
+  }
+  .badges {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge {
+    background: rgba(255,255,255,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #94a3b8;
+  }
+  .badge.model {
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  .feedback {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: flex-end;
+  }
+  .feedback button {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .feedback button:hover {
+    color: #f8fafc;
+    background: rgba(255,255,255,0.1);
+  }
+  .input-area {
+    display: flex;
+    padding: 12px;
+    background: rgba(30, 41, 59, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 8px;
+  }
+  input[type="text"] {
+    flex-grow: 1;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 10px 16px;
+    color: #f8fafc;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus {
+    border-color: #38bdf8;
+  }
+  button.send-btn {
+    background: #38bdf8;
+    color: #0f172a;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+  button.send-btn:hover {
+    opacity: 0.9;
+  }
+  button.send-btn:active {
+    transform: scale(0.95);
+  }
+  button.send-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    margin-left: 2px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="header">AI Assistant</div>
+  <div class="messages" id="messages">
+    <!-- Messages will be appended here -->
+  </div>
+  <div class="input-area">
+    <input type="text" id="promptInput" placeholder="Type your message..." autocomplete="off">
+    <button class="send-btn" id="sendBtn" title="Send">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  const messagesEl = document.getElementById('messages');
+  const promptInput = document.getElementById('promptInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  function addMessage(content, type, data = null) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${type}`;
+
+    if (type === 'assistant' && data) {
+      const badgesDiv = document.createElement('div');
+      badgesDiv.className = 'badges';
+
+      const modelBadge = document.createElement('span');
+      modelBadge.className = 'badge model';
+      modelBadge.textContent = data.model || 'AI';
+
+      const costBadge = document.createElement('span');
+      costBadge.className = 'badge';
+      costBadge.textContent = (data.cost !== undefined ? data.cost : 0) + ' yen';
+
+      badgesDiv.appendChild(modelBadge);
+      badgesDiv.appendChild(costBadge);
+      msgDiv.appendChild(badgesDiv);
+    }
+
+    const textDiv = document.createElement('div');
+    textDiv.textContent = content;
+    msgDiv.appendChild(textDiv);
+
+    if (type === 'assistant' && data && data.record_id) {
+      const feedbackDiv = document.createElement('div');
+      feedbackDiv.className = 'feedback';
+
+      const upBtn = document.createElement('button');
+      upBtn.textContent = '👍';
+      upBtn.onclick = () => sendFeedback(data.record_id, 'up');
+
+      const downBtn = document.createElement('button');
+      downBtn.textContent = '👎';
+      downBtn.onclick = () => sendFeedback(data.record_id, 'down');
+
+      feedbackDiv.appendChild(upBtn);
+      feedbackDiv.appendChild(downBtn);
+      msgDiv.appendChild(feedbackDiv);
+    }
+
+    messagesEl.appendChild(msgDiv);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  async function sendFeedback(recordId, feedbackType) {
+    try {
+      await fetch('/v1/pipeline/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ record_id: recordId, feedback: feedbackType })
+      });
+      // Optionally provide some visual feedback
+    } catch (e) {
+      console.error('Feedback error:', e);
+    }
+  }
+
+  async function sendMessage() {
+    const prompt = promptInput.value.trim();
+    if (!prompt) return;
+
+    promptInput.value = '';
+    addMessage(prompt, 'user');
+
+    // Add temporary loading indicator
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'message assistant';
+    loadingDiv.textContent = '...';
+    loadingDiv.id = 'loading';
+    messagesEl.appendChild(loadingDiv);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+
+    try {
+      const response = await fetch('/v1/pipeline/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt, format: 'json' })
+      });
+
+      const data = await response.json();
+
+      // Remove loading indicator
+      document.getElementById('loading')?.remove();
+
+      addMessage(data.answer || data.result_text || 'Error processing response', 'assistant', data);
+
+    } catch (e) {
+      document.getElementById('loading')?.remove();
+      addMessage('Error connecting to server.', 'assistant');
+      console.error(e);
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  promptInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+</script>
+</body>
+</html>
